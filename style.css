@@ -1,0 +1,269 @@
+* {
+  font-family: "Open Sans", sans-serif;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html,
+body 
+{
+  margin: 0;
+  padding: 0;
+  font-family: "Open Sans", sans-serif;
+  height: 100vh; 
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+section {
+  flex: 1 ;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px
+}
+
+.headline {
+  /* flex: 1; Nimmt den verfügbaren Platz zwischen Logo und Suchfeld ein */
+  text-align: center; /* Zentriert den Text horizontal */
+}
+
+.input-group {
+  max-width: 300px;
+  margin-right: 20px;
+}
+
+main {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+section {
+  flex: 1;
+}
+
+.input-search {
+  min-width: 90%;
+}
+
+#pokemonSearch {
+  max-width: 100%;
+}
+
+.detail-overlay-hidden {
+  display: none;
+}
+
+.logo img {
+  max-width: 100px;
+}
+
+/* show all pokemons */
+#showAllPokemons {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+.onePokemon {
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 300px;
+  height: 300px;
+  background-color: rgb(221, 64, 16);
+  margin: 12px;
+  border-radius: 20px;
+}
+
+.onePokemon img {
+  max-width: 150px;
+}
+
+.onePokemon:hover {
+  transform: scale(1.05);
+}
+
+.head-pokecard {
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.first-type {
+  background-color: red;
+  border-radius: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-bottom: 24px;
+  max-height: 50%;
+}
+
+/* Show Details of one pokemon */
+#pokemonDetailOverlay,
+#pokemonDetailOverlay * {
+  pointer-events: all;
+}
+
+#pokemonDetailOverlay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 500px;
+  height: 800px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 2px solid #000;
+  z-index: 1000;
+  overflow: hidden;
+  box-sizing: border-box;
+  position: fixed;
+  border-radius: 20px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.openCard-top {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
+  height: 50%;
+}
+
+.openCard-top img {
+  margin-top: 8%;
+  width: 50%;
+  height: 50%;
+  max-height: 150px;
+  z-index: 100;
+}
+
+.openCard-bottom {
+  height: 70%;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+  width: 100%;
+  margin-top: -40px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pokemonStatsChart {
+  max-width: 90%;
+}
+
+.show-all-types {
+  display: flex;
+}
+
+.no-click {
+  pointer-events: none;
+}
+
+.navigation-arrow {
+  position: absolute;
+  top: 40%;
+  font-size: 24px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.left-arrow {
+  margin-top: 10px;
+  left: 10px;
+}
+
+.right-arrow {
+  right: 10px;
+  margin-top: 10px;
+}
+
+.main-card-info{
+  display: flex;
+  padding: 12px;
+  }
+  
+  .typFrontend{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;  
+    margin-right: 20px;
+  }
+
+#loadMorePokemons {
+  margin-top: 40px;
+  margin-bottom: 40px;
+  align-self: center;
+  max-width: 100%;
+  width: 300px;
+}
+
+#spinner-load {
+  align-self: center;
+}
+
+
+/* media Querrys */
+@media (max-width: 750px) {
+  .headline{
+    display: none;
+  }
+}
+
+@media (max-width: 550px) {
+  #pokemonDetailOverlay {
+    width: 400px;
+    height: 700px;
+  }
+}
+
+@media (max-width: 500px) {
+  #pokemonDetailOverlay {
+    width: 350px;
+    height: 600px;
+  }
+  .logo img {
+    display: none;
+  }
+  header {
+    margin-top: 20px;
+   justify-content: center;
+  }
+  .input-group{
+    margin: 0;
+  }
+}
+
+@media (max-width: 400px) {
+  #pokemonDetailOverlay {
+    width: 300px;
+    height: 500px;
+  }
+}
+
+@media (max-width: 350px) {
+  #pokemonDetailOverlay {
+    width: 250px;
+    height: 400px;
+  }
+}
+
