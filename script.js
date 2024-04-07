@@ -63,50 +63,63 @@ window.onload = function () {
   loadPokemon(); 
 };
 
+async function fetchPokemon(url, i) {
+  try {
+    let response = await fetch(url);
+    let pokemon = await response.json();
+    let secondType = pokemon.types.length > 1 ? pokemon.types[1].type.name : null;
+    allPokemons.push({
+      id: pokemon.id,
+      name: pokemon.name,
+      type: pokemon.types[0].type.name,
+      secondType: secondType,
+      image: pokemon.sprites.other.dream_world.front_default || pokemon.sprites.front_default,
+    });
+  } catch (error) {
+    console.error(`Error loading Pokémon with ID ${i}:`, error);
+  }
+}
+
 async function loadPokemon() {
   for (let i = 1; i <= maxPokemon; i++) {
     let url = `https://pokeapi.co/api/v2/pokemon/${i}`;
-    try {
-      let response = await fetch(url);
-      let pokemon = await response.json();      
-      let secondType = pokemon.types.length > 1 ? pokemon.types[1].type.name : null;
-      allPokemons.push({
-        id: pokemon.id,
-        name: pokemon.name,
-        type: pokemon.types[0].type.name,
-        secondType: secondType, 
-        image: pokemon.sprites.other.dream_world.front_default || pokemon.sprites.front_default,
-      });
-    } catch (error) {
-      console.error(`Error loading Pokémon with ID ${i}:`, error);
-    }
+    await fetchPokemon(url, i);
   }
   displayPokemons(allPokemons);
   updateLoadMoreButtonVisibility();
 }
 
-function displayPokemons(pokemons,append = false) {
+function generatePokemonHTML(pokemon) {
+  let backgroundColor = types[pokemon.type];
+  return paginatedPokemonsHTML(pokemon, backgroundColor);
+}
+
+function displayPokemons(pokemons, append = false) {
   let allPokemonsHTML = "";
   let start = (currentPage - 1) * pokemonsPerPage;
   let end = start + pokemonsPerPage;
   let paginatedPokemons = pokemons.slice(start, end);
 
   paginatedPokemons.forEach(pokemon => {
-    let backgroundColor = types[pokemon.type];
-    allPokemonsHTML += paginatedPokemonsHTML(pokemon, backgroundColor);
+    allPokemonsHTML += generatePokemonHTML(pokemon);
   });
   
+  const showAllPokemonsElement = document.getElementById("showAllPokemons");
   if (append) {
-    document.getElementById("showAllPokemons").innerHTML += allPokemonsHTML;
+    showAllPokemonsElement.innerHTML += allPokemonsHTML;
   } else {
-    document.getElementById("showAllPokemons").innerHTML = allPokemonsHTML;
+    showAllPokemonsElement.innerHTML = allPokemonsHTML;
   }
   
+  displayPokemonsStyle();
+  updateLoadMoreButtonVisibility();
+}
+
+function displayPokemonsStyle(){
   document.getElementById('spinner-load').style.display = 'none';
   document.getElementById('pokemonSearch').disabled = false;
   document.getElementById('loadMorePokemons').style.display = '';
   showPokemonDetailsActive = false;
-  updateLoadMoreButtonVisibility();
 }
 
 async function loadPokemonStatsAndDrawChart(pokemonID) {
@@ -133,7 +146,6 @@ function handleLoadMorePokemons(){
 };
 
 function handleSearchInput(e) {
-  // let allLoadeds = allPokemons.every(pokemon => pokemon.loaded);
   let searchText = e.target.value.toLowerCase();
 
   if (searchText.length >= 3) {
@@ -153,20 +165,30 @@ function handleSearchInput(e) {
   updateLoadMoreButtonVisibility();
 }
 
-async function showPokemonDetails(pokemonID) {
+async function fetchPokemonData(pokemonID) {
   let url = `https://pokeapi.co/api/v2/pokemon/${pokemonID}`;
   let response = await fetch(url);
-  let pokemon = await response.json();
+  return await response.json();
+}
+
+function getTypeAndColors(pokemon) {
   let pokemonType = pokemon.types[0].type.name;
   let typeColor = types[pokemonType];
   let typeBackgroundColor = typesBackground[pokemonType];
   let secondType = null;
   let secondTypeColor = "";
-  
+
   if (pokemon.types[1]) {
     secondType = pokemon.types[1].type.name;
     secondTypeColor = types[secondType];
   }
+
+  return {
+    pokemonType,typeColor, typeBackgroundColor, secondType, secondTypeColor
+  };
+}
+
+function displayOverlay(pokemonID, pokemon, pokemonType, typeColor, typeBackgroundColor, secondTypeColor, secondType) {
   document.getElementById('sectionBackgroudColor').style.backgroundColor = 'rgba(128, 128, 128, 0.3)';
   let overlay = document.getElementById("pokemonDetailOverlay");
   overlay.style.display = "";
@@ -177,14 +199,25 @@ async function showPokemonDetails(pokemonID) {
   });
 
   document.querySelector(".openCard-bottom").addEventListener("click", (event) => {
-      event.stopPropagation();
-    });
+    event.stopPropagation();
+  });
 
   document.getElementById("showAllPokemons").classList.add("no-click");
-  loadPokemonStatsAndDrawChart(pokemonID);
-  showPokemonDetailsActive = true;
-  handleLoadMorePokemons();
 }
+
+async function showPokemonDetails(pokemonID) {
+  try {
+    const pokemon = await fetchPokemonData(pokemonID);
+    const { pokemonType, typeColor, typeBackgroundColor, secondTypeColor, secondType } = getTypeAndColors(pokemon);
+    displayOverlay(pokemonID, pokemon, pokemonType, typeColor, typeBackgroundColor, secondTypeColor, secondType);
+    loadPokemonStatsAndDrawChart(pokemonID);
+    showPokemonDetailsActive = true;
+    handleLoadMorePokemons();
+  } catch (error) {
+    console.error('Error showing Pokémon details:', error);
+  }
+}
+
 
 function closeOverlay() {
   let overlay = document.getElementById("pokemonDetailOverlay");
@@ -217,14 +250,22 @@ function detailOverlay(  pokemonID, pokemon, pokemonType, typeColor, typeBackgro
   `;
 }
 
-function paginatedPokemonsHTML(pokemon, backgroundColor) {
+function getTypeHTML(type, backgroundColor) {
+  if (type) {
+    return `<span class="first-type" style="background-color: ${backgroundColor};">${type}</span>`;
+  }
+  return '';
+}
+
+function getPokemonTypesHTML(pokemon) {
   let pokemonTypesHTML = '';
-  if (pokemon.type) {
-    pokemonTypesHTML += `<span class="first-type" style="background-color: ${typesBackground[pokemon.type]};">${pokemon.type}</span>`;
-  }
-  if (pokemon.secondType) {
-    pokemonTypesHTML += `<span class="first-type" style="background-color: ${types[pokemon.secondType]};">${pokemon.secondType}</span>`;
-  }
+  pokemonTypesHTML += getTypeHTML(pokemon.type, typesBackground[pokemon.type]);
+  pokemonTypesHTML += getTypeHTML(pokemon.secondType, types[pokemon.secondType]);
+  return pokemonTypesHTML;
+}
+
+function paginatedPokemonsHTML(pokemon, backgroundColor) {
+  const pokemonTypesHTML = getPokemonTypesHTML(pokemon);
   return /*html*/ `    
     <div class="onePokemon" id="onePokemon${pokemon.id}" style="background-color: ${backgroundColor};" onclick="showPokemonDetails(${pokemon.id})">
       <p class="head-pokecard"><b>${pokemon.name.toUpperCase()}</b> <span> <b> ID:${pokemon.id}</b></span></p>
@@ -237,7 +278,6 @@ function paginatedPokemonsHTML(pokemon, backgroundColor) {
     </div>
   `;
 }
-
 
 function createNewChart(ctx, pokemonStats) {
   new Chart(ctx, {
