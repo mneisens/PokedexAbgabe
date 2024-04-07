@@ -111,6 +111,7 @@ section {
   padding-right: 8px;
   margin-bottom: 24px;
   max-height: 50%;
+  text-align: center;
 }
 
 /* Show Details of one pokemon */

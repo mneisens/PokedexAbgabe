@@ -60,19 +60,16 @@ window.onload = function () {
       currentPage++;
       displayPokemons(allPokemons, true);
     });
-    loadPokemon(); 
+  loadPokemon(); 
 };
-
 
 async function loadPokemon() {
   for (let i = 1; i <= maxPokemon; i++) {
     let url = `https://pokeapi.co/api/v2/pokemon/${i}`;
     try {
       let response = await fetch(url);
-      let pokemon = await response.json();
-      
+      let pokemon = await response.json();      
       let secondType = pokemon.types.length > 1 ? pokemon.types[1].type.name : null;
-
       allPokemons.push({
         id: pokemon.id,
         name: pokemon.name,
@@ -88,7 +85,6 @@ async function loadPokemon() {
   updateLoadMoreButtonVisibility();
 }
 
-
 function displayPokemons(pokemons,append = false) {
   let allPokemonsHTML = "";
   let start = (currentPage - 1) * pokemonsPerPage;
@@ -97,18 +93,9 @@ function displayPokemons(pokemons,append = false) {
 
   paginatedPokemons.forEach(pokemon => {
     let backgroundColor = types[pokemon.type];
-    // let pokemonType = pokemon.types[0].type.name;
-    // let typeColor = types[pokemonType];
-    let secondType = null;
-    let secondTypeColor = "";
-  
-  //   if (pokemon.types[1]) {
-  //     secondType = pokemon.types[1].type.name;
-  //     secondTypeColor = types[secondType];
-  // }
     allPokemonsHTML += paginatedPokemonsHTML(pokemon, backgroundColor);
   });
-
+  
   if (append) {
     document.getElementById("showAllPokemons").innerHTML += allPokemonsHTML;
   } else {
@@ -137,24 +124,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function handleLoadMorePokemons(){
   let allLoaded = allPokemons.every(pokemon => pokemon.loaded);
-  if (allLoaded){
-    console.log('alloaded')
-  } 
   if(handleSearchInputActive || showPokemonDetailsActive && allLoaded){
     document.getElementById('loadMorePokemons').style.display = 'none';
-    console.log('Eigener none');
   }
   else if(!handleSearchInputActive && !showPokemonDetailsActive && allLoaded){
     document.getElementById('loadMorePokemons').style.display = '';
-    console.log('Eigener Buttoin ist aktiv');
   }
 };
 
 function handleSearchInput(e) {
-  let allLoadeds = allPokemons.every(pokemon => pokemon.loaded);
-
+  // let allLoadeds = allPokemons.every(pokemon => pokemon.loaded);
   let searchText = e.target.value.toLowerCase();
-  if (searchText.length >= 3 && allLoadeds) {
+
+  if (searchText.length >= 3) {
     currentPage = 1;
     let filteredPokemons = allPokemons.filter((pokemon) =>
       pokemon.name.toLowerCase().includes(searchText)
@@ -214,12 +196,6 @@ function closeOverlay() {
   handleLoadMorePokemons();
 }
 
-
-
-document.getElementById("pokemonDetailOverlay").addEventListener("click", () => {
-    closeOverlay();
-  });
-
 function detailOverlay(  pokemonID, pokemon, pokemonType, typeColor, typeBackgroundColor, secondTypeColor, secondType) {
   let nextPokemonId = pokemonID >= maxPokemon ? 1 : pokemonID + 1;
   let previousPokemonId = pokemonID <= 1 ? maxPokemon : pokemonID - 1;
@@ -241,44 +217,23 @@ function detailOverlay(  pokemonID, pokemon, pokemonType, typeColor, typeBackgro
   `;
 }
 
-// function paginatedPokemonsHTML(pokemon, backgroundColor) {
-//   return /*html*/ `    
-//     <div class="onePokemon" id="onePokemon${pokemon.id}" style="background-color: ${backgroundColor};" onclick="showPokemonDetails(${pokemon.id})">
-//     <p class="head-pokecard"><b>${pokemon.name.toUpperCase()}</b> <span> <b> ID:${pokemon.id}</b></span></p>
-//     <div class="main-card-info">
-//       <div class="typFrontend">
-//         <span class="first-type">fire</span>
-//         <span class="first-type">water</span>
-//       </div>
-//       <img src="${pokemon.image}" alt="${pokemon.name}" style="height: 200px;">
-//     </div>  
-//     </div>
-//   `;
-// }
-
 function paginatedPokemonsHTML(pokemon, backgroundColor) {
   let pokemonTypesHTML = '';
-  
-
   if (pokemon.type) {
-    // Wenn der erste Typ vorhanden ist, füge ihn hinzu
     pokemonTypesHTML += `<span class="first-type" style="background-color: ${typesBackground[pokemon.type]};">${pokemon.type}</span>`;
   }
-
   if (pokemon.secondType) {
-    // Wenn ein zweiter Typ vorhanden ist, füge ihn hinzu
     pokemonTypesHTML += `<span class="first-type" style="background-color: ${types[pokemon.secondType]};">${pokemon.secondType}</span>`;
   }
-
   return /*html*/ `    
     <div class="onePokemon" id="onePokemon${pokemon.id}" style="background-color: ${backgroundColor};" onclick="showPokemonDetails(${pokemon.id})">
-    <p class="head-pokecard"><b>${pokemon.name.toUpperCase()}</b> <span> <b> ID:${pokemon.id}</b></span></p>
-    <div class="main-card-info">
-      <div class="typFrontend">
-        ${pokemonTypesHTML}
-      </div>
-      <img src="${pokemon.image}" alt="${pokemon.name}" style="height: 200px;">
-    </div>  
+      <p class="head-pokecard"><b>${pokemon.name.toUpperCase()}</b> <span> <b> ID:${pokemon.id}</b></span></p>
+      <div class="main-card-info">
+        <div class="typFrontend">
+          ${pokemonTypesHTML}
+        </div>
+        <img src="${pokemon.image}" alt="${pokemon.name}" style="height: 200px;">
+      </div>  
     </div>
   `;
 }
@@ -357,21 +312,6 @@ function updateLoadMoreButtonVisibility() {
   }
 }
 
-//
-
-let previousSate = false
-if(handleSearchInputActive !== previousSate){
-  console.log('handleSearchInputActive ist true');
-}
-else{
-  console.log('handleSearchInputActive ist false');
-
-};
-
-if(showPokemonDetailsActive !== previousSate){
-  console.log('showPokemonDetailsActive ist true');
-}
-else{
-  console.log('showPokemonDetailsActive ist false');
-
-};
+document.getElementById("pokemonDetailOverlay").addEventListener("click", () => {
+  closeOverlay();
+});
