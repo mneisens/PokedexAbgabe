@@ -29,8 +29,7 @@ header {
 }
 
 .headline {
-  /* flex: 1; Nimmt den verfügbaren Platz zwischen Logo und Suchfeld ein */
-  text-align: center; /* Zentriert den Text horizontal */
+  text-align: center; 
 }
 
 .input-group {

@@ -193,7 +193,8 @@ function displayOverlay(pokemonID, pokemon, pokemonType, typeColor, typeBackgrou
   let overlay = document.getElementById("pokemonDetailOverlay");
   overlay.style.display = "";
   overlay.innerHTML = detailOverlay(pokemonID, pokemon, pokemonType, typeColor, typeBackgroundColor, secondTypeColor, secondType);
-  overlay.classList.remove("detail-overlay-hidden");
+  document.getElementById('showAllPokemons').style.overflow = 'hidden';
+  document.getElementById('body-hidden').style.overflow = 'hidden';
   document.querySelector(".openCard-top").addEventListener("click", (event) => {
     event.stopPropagation();
   });
@@ -224,7 +225,7 @@ function closeOverlay() {
   overlay.style.display = "none";
   document.getElementById("showAllPokemons").classList.remove("no-click");
   document.getElementById('sectionBackgroudColor').style.backgroundColor = '';
-
+  document.getElementById('body-hidden').style.overflow = '';
   showPokemonDetailsActive = false;
   handleLoadMorePokemons();
 }
@@ -235,10 +236,10 @@ function detailOverlay(  pokemonID, pokemon, pokemonType, typeColor, typeBackgro
 
   return /*html*/ `
     <div class="navigation-arrow left-arrow btn btn-secondary"" onclick="showPreviousPokemon(${previousPokemonId})">&#8592;</div>
-    <div class="openCard-top" style="background-color: ${typeBackgroundColor};">
+    <div class="openCard-top" style="background-color: ${typeColor};">
     <h1>${pokemon.name.toUpperCase()} (#${pokemon.id})</h1>
      <div>
-     <span class="first-type" style="background-color: ${typeColor};">${pokemonType}</span>
+     <span class="first-type" style="background-color: ${typeBackgroundColor};">${pokemonType}</span>
       ${secondType ? `<span class="first-type" style="background-color: ${secondTypeColor}; margin-left: 8px;">${secondType}</span>`: "" }
       </div class="show-all-types">
       <img src="${pokemon.sprites.other.dream_world.front_default}" style="width: 50%;">
