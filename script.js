@@ -346,10 +346,8 @@ function showPreviousPokemon(currentPokemonId) {
 function updateLoadMoreButtonVisibility() {
   if (!handleSearchInputActive && !showPokemonDetailsActive && allPokemons.length > currentPage * pokemonsPerPage) {
     document.getElementById('loadMorePokemons').style.display = '';
-    console.log('display aktiv');
   } else {
     document.getElementById('loadMorePokemons').style.display = 'none';
-    console.log('display nicht aktiv');
   }
 }
 
